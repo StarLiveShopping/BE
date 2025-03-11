@@ -41,6 +41,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
             socialId = processKakaoUser(oAuth2User.getAttributes());
         } else if (platform.equalsIgnoreCase("naver")) {
             socialId = processNaverUser(oAuth2User.getAttributes());
+        } else if (platform.equalsIgnoreCase("google")) {
+            socialId = processGoogleUser(oAuth2User.getAttributes());
         }
 
         return new CustomOAuth2User(socialId);
@@ -64,6 +66,16 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         String name = response.get("nickname").toString();
 
         saveOrUpdateUser(socialId, name, Platform.NAVER);
+
+        return socialId;
+    }
+
+    private String processGoogleUser(Map<String, Object> attributes) {
+        // 응답 데이터가 attributes에 바로 포함됨
+        String socialId = attributes.get("sub").toString(); // Google의 고유 ID
+        String name = attributes.get("name").toString();
+
+        saveOrUpdateUser(socialId, name, Platform.GOOGLE);
 
         return socialId;
     }

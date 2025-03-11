@@ -26,13 +26,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private final JwtProvider jwtProvider;
+  
+    // jwt 인증 처리 필터
     private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
+
 
         try{
             // 요청 헤더에서 Bearer 토큰을 추출
@@ -73,6 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 
     // 요청 헤더에서 Bearer 토큰을 추출
     private String parseBearerToken(HttpServletRequest request) {

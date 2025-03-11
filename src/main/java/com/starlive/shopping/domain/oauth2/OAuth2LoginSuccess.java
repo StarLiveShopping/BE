@@ -34,6 +34,7 @@ public class OAuth2LoginSuccess extends SimpleUrlAuthenticationSuccessHandler {
 
         // Refresh Token 쿠키 설정
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+
         refreshTokenCookie.setHttpOnly(true); // http only
         refreshTokenCookie.setSecure(false); // 현재 http -> https로 변경 필요
         refreshTokenCookie.setPath("/"); // 모든 경로에서 사용 가능

@@ -7,6 +7,7 @@ import com.starlive.shopping.domain.oauth2.OAuth2UserService;
 import com.starlive.shopping.global.filter.JwtAuthenticationFilter;
 import com.starlive.shopping.global.filter.OAuth2LogoutCheckFilter;
 import com.starlive.shopping.global.response.FailedAuthentication;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configurable
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final DefaultOAuth2UserService oAuth2UserService;
@@ -44,15 +46,17 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+    protected SecurityFilterChain configure(HttpSecurity httpSecurity,
+        CorsConfigurationSource corsConfigurationSource) throws Exception {
+
+        httpSecurity
             .cors(cors -> cors
                 .configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(sessionManagement -> sessionManagement
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(request -> request
-                .requestMatchers("/oauth2/**").permitAll()
+                .requestMatchers("/,","/oauth2/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .oauth2Login(oauth2 -> oauth2
@@ -71,7 +75,7 @@ public class WebSecurityConfig {
                 .authenticationEntryPoint(new FailedAuthentication())
             );
 
-        return http.build();
+        return httpSecurity.build();
     }
 
     @Bean
@@ -87,4 +91,3 @@ public class WebSecurityConfig {
 
         return source;
     }
-}

@@ -34,14 +34,15 @@ public class OAuth2LoginSuccess extends SimpleUrlAuthenticationSuccessHandler {
 
         // Refresh Token 쿠키 설정
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(COOKIE_EXPIRATION); // 7일
+
+        refreshTokenCookie.setHttpOnly(true); // http only
+        refreshTokenCookie.setSecure(false); // 현재 http -> https로 변경 필요
+        refreshTokenCookie.setPath("/"); // 모든 경로에서 사용 가능
+        refreshTokenCookie.setMaxAge(COOKIE_EXPIRATION); // 7일 동안 유지
 
         response.addCookie(refreshTokenCookie);
 
-        // ResponseDto 응답
+        // ResponseDto 활용하여 JSON 응답
         ApiResponse<Map<String, Object>> successResponse = ApiResponse.success("Success to login.", Map.of(
             "accessToken", accessToken,
             "tokenType", "Bearer",

@@ -17,7 +17,7 @@ public class FailedAuthentication implements AuthenticationEntryPoint {
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        // ResponseDto 응답
+        // ✅ ResponseDto 활용하여 JSON 응답
         response.getWriter().write(new ObjectMapper().writeValueAsString(ApiResponse.error("Fail to authentication.")));
     }
 }

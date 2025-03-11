@@ -26,6 +26,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+  
     // jwt 인증 처리 필터
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
@@ -34,54 +35,58 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
-        try {
-            // 헤더에서 토큰 추출
+
+        try{
+            // 요청 헤더에서 Bearer 토큰을 추출
             String token = parseBearerToken(request);
-            if (token == null) {
+            if(token == null) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // 토큰 유효성 검사
+            // 토큰 유효성 검사 및 socialId 추출
             String socialId = jwtProvider.validateToken(token);
-            if (socialId == null) {
+            if(socialId == null) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // socialId 조회
-            UserEntity userEntity = userRepository.findBySocialId(socialId).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));  // socialId 조회
-            UserType role = userEntity.getUserType(); // ADMIN, CUSTOMER, SELLER
+            // DB에서 사용자 정보 조회
+            UserEntity userEntity = userRepository.findBySocialId(socialId).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+            UserType role = userEntity.getUserType();
 
+            // 사용자의 권한(UserType)을 SecurityContext에 등록하기 위해 변환
             List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority(role.name()));
 
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-
-            // socialId와 userType을 기반으로 인증 토큰 생성
-            AbstractAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(socialId, null, authorities);
+            // SecurityContext 생성 및 사용자 인증 객체 설정
+            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+            AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userEntity, null, authorities);
+            // 요청 정보 설정 (IP, 세션 ID 등 추가)
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            securityContext.setAuthentication(authenticationToken); // 인증 정보 설정
-            SecurityContextHolder.setContext(securityContext);  // 설정된 보안 컨텍스트 스레드에 저장
+            // SecurityContext에 인증 객체 저장
+            securityContext.setAuthentication(authenticationToken);
+            SecurityContextHolder.setContext(securityContext);
 
-        } catch(Exception exception) {
+        }catch(Exception exception) {
             exception.printStackTrace();
         }
 
         filterChain.doFilter(request, response);
     }
 
+
+    // 요청 헤더에서 Bearer 토큰을 추출
     private String parseBearerToken(HttpServletRequest request) {
-        // 헤더에서 jwt 토큰 추출
         String authorization = request.getHeader("Authorization");
 
         boolean hasAuthorization = StringUtils.hasText(authorization);
-        if (!hasAuthorization) { return null; }
+
+        if(!hasAuthorization) return null;
 
         boolean isBearer = authorization.startsWith("Bearer ");
-        if (!isBearer) { return null; }
+        if(!isBearer) return null;
 
         String token = authorization.substring(7);
         return token;

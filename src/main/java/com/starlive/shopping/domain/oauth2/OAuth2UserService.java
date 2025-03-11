@@ -29,7 +29,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         String platform = request.getClientRegistration().getClientName();
         OAuth2AccessToken accessTokenInfo = request.getAccessToken();
 
-        try {
+        try { // 사용자 정보 출력
             System.out.println(new ObjectMapper().writeValueAsString(oAuth2User.getAttributes()));
         } catch (Exception exception) {
             exception.printStackTrace();

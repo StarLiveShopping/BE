@@ -23,12 +23,6 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-//import jakarta.servlet.ServletException;
-//import jakarta.servlet.http.HttpServletRequest;
-//import jakarta.servlet.http.HttpServletResponse;
-//import java.io.IOException;
-//import org.springframework.security.core.AuthenticationException;
-//import org.springframework.security.web.AuthenticationEntryPoint;
 
 @Configurable
 @Configuration
@@ -97,16 +91,3 @@ public class WebSecurityConfig {
 
         return source;
     }
-}
-
-//class FailedAuthenticationEntryPoint implements AuthenticationEntryPoint {
-//
-//    @Override
-//    public void commence(HttpServletRequest request, HttpServletResponse response,
-//        AuthenticationException authException) throws IOException, ServletException {
-//
-//        response.setContentType("application/json");
-//        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//        response.getWriter().write("{{\"code\": \"NP\", \"message\": \"No Permission\"}}");
-//    }
-//}

@@ -36,8 +36,10 @@ public class WebSecurityConfig {
     private final OAuth2LogoutSuccess oAuth2LogoutSuccess;
     private final AuthenticationFailureHandler oAuth2LoginFailure;
 
-    public WebSecurityConfig(OAuth2UserService oAuth2UserService, JwtAuthenticationFilter jwtAuthenticationFilter,
-        OAuth2LoginSuccess oAuth2LoginSuccess, OAuth2LogoutSuccess oAuth2LogoutSuccess, OAuth2LoginFailure oAuth2LoginFailure) {
+    public WebSecurityConfig(OAuth2UserService oAuth2UserService,
+        JwtAuthenticationFilter jwtAuthenticationFilter,
+        OAuth2LoginSuccess oAuth2LoginSuccess, OAuth2LogoutSuccess oAuth2LogoutSuccess,
+        OAuth2LoginFailure oAuth2LoginFailure) {
         this.oAuth2UserService = oAuth2UserService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.oAuth2LoginSuccess = oAuth2LoginSuccess;
@@ -56,7 +58,7 @@ public class WebSecurityConfig {
             .sessionManagement(sessionManagement -> sessionManagement
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(request -> request
-                .requestMatchers("/,","/oauth2/**").permitAll()
+                .requestMatchers("/,", "/oauth2/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .oauth2Login(oauth2 -> oauth2
@@ -91,3 +93,4 @@ public class WebSecurityConfig {
 
         return source;
     }
+}
